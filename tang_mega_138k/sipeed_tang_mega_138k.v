@@ -9,7 +9,7 @@
 // Filename   : sipeed_tang_mega_138k_pro.v
 // Device     : GW5AST-LV138FPG676AES
 // LiteX sha1 : --------
-// Date       : 2025-02-13 15:19:05
+// Date       : 2025-02-13 15:37:15
 //------------------------------------------------------------------------------
 
 `timescale 1ns / 1ps
@@ -18,7 +18,7 @@
 // Module
 //------------------------------------------------------------------------------
 
-module sipeed_tang_mega_138k (
+module sipeed_tang_mega_138k_pro (
     input  wire          clk50,
     output wire          led_n0,
     output wire          led_n1,
@@ -47,6 +47,7 @@ BaseSoC
 │    │    │    └─── waittimer_0* (WaitTimer)
 └─── csr (SoCCSRHandler)
 └─── irq (SoCIRQHandler)
+└─── ctrl (SoCController)
 └─── cpu (VexRiscv)
 │    └─── [VexRiscv]
 └─── rom (SRAM)
@@ -83,10 +84,14 @@ BaseSoC
 └─── csr_bankarray (CSRBankArray)
 │    └─── csrbank_0* (CSRBank)
 │    │    └─── csrstorage_0* (CSRStorage)
+│    │    └─── csrstorage_1* (CSRStorage)
+│    │    └─── csrstatus_0* (CSRStatus)
 │    └─── csrbank_1* (CSRBank)
 │    │    └─── csrstorage_0* (CSRStorage)
-│    │    └─── csrstatus_0* (CSRStatus)
 │    └─── csrbank_2* (CSRBank)
+│    │    └─── csrstorage_0* (CSRStorage)
+│    │    └─── csrstatus_0* (CSRStatus)
+│    └─── csrbank_3* (CSRBank)
 │    │    └─── csrstorage_0* (CSRStorage)
 │    │    └─── csrstorage_1* (CSRStorage)
 │    │    └─── csrstorage_2* (CSRStorage)
@@ -95,7 +100,7 @@ BaseSoC
 │    │    └─── csrstatus_1* (CSRStatus)
 │    │    └─── csrstatus_2* (CSRStatus)
 │    │    └─── csrstorage_4* (CSRStorage)
-│    └─── csrbank_3* (CSRBank)
+│    └─── csrbank_4* (CSRBank)
 │    │    └─── csrstatus_0* (CSRStatus)
 │    │    └─── csrstatus_1* (CSRStatus)
 │    │    └─── csrstatus_2* (CSRStatus)
@@ -124,82 +129,95 @@ reg           builder_array_muxed5 = 1'd0;
 reg     [2:0] builder_array_muxed6 = 3'd0;
 reg     [1:0] builder_array_muxed7 = 2'd0;
 reg    [19:0] builder_count = 20'd1000000;
-wire    [5:0] builder_csrbank0_out0_r;
-reg           builder_csrbank0_out0_re = 1'd0;
-wire    [5:0] builder_csrbank0_out0_w;
-reg           builder_csrbank0_out0_we = 1'd0;
+wire   [31:0] builder_csrbank0_bus_errors_r;
+reg           builder_csrbank0_bus_errors_re = 1'd0;
+wire   [31:0] builder_csrbank0_bus_errors_w;
+reg           builder_csrbank0_bus_errors_we = 1'd0;
+wire    [1:0] builder_csrbank0_reset0_r;
+reg           builder_csrbank0_reset0_re = 1'd0;
+wire    [1:0] builder_csrbank0_reset0_w;
+reg           builder_csrbank0_reset0_we = 1'd0;
+wire   [31:0] builder_csrbank0_scratch0_r;
+reg           builder_csrbank0_scratch0_re = 1'd0;
+wire   [31:0] builder_csrbank0_scratch0_w;
+reg           builder_csrbank0_scratch0_we = 1'd0;
 wire          builder_csrbank0_sel;
-wire   [31:0] builder_csrbank1_data_in0_r;
-reg           builder_csrbank1_data_in0_re = 1'd0;
-wire   [31:0] builder_csrbank1_data_in0_w;
-reg           builder_csrbank1_data_in0_we = 1'd0;
-wire   [31:0] builder_csrbank1_data_out_r;
-reg           builder_csrbank1_data_out_re = 1'd0;
-wire   [31:0] builder_csrbank1_data_out_w;
-reg           builder_csrbank1_data_out_we = 1'd0;
+wire    [5:0] builder_csrbank1_out0_r;
+reg           builder_csrbank1_out0_re = 1'd0;
+wire    [5:0] builder_csrbank1_out0_w;
+reg           builder_csrbank1_out0_we = 1'd0;
 wire          builder_csrbank1_sel;
-wire          builder_csrbank2_en0_r;
-reg           builder_csrbank2_en0_re = 1'd0;
-wire          builder_csrbank2_en0_w;
-reg           builder_csrbank2_en0_we = 1'd0;
-wire          builder_csrbank2_ev_enable0_r;
-reg           builder_csrbank2_ev_enable0_re = 1'd0;
-wire          builder_csrbank2_ev_enable0_w;
-reg           builder_csrbank2_ev_enable0_we = 1'd0;
-wire          builder_csrbank2_ev_pending_r;
-reg           builder_csrbank2_ev_pending_re = 1'd0;
-wire          builder_csrbank2_ev_pending_w;
-reg           builder_csrbank2_ev_pending_we = 1'd0;
-wire          builder_csrbank2_ev_status_r;
-reg           builder_csrbank2_ev_status_re = 1'd0;
-wire          builder_csrbank2_ev_status_w;
-reg           builder_csrbank2_ev_status_we = 1'd0;
-wire   [31:0] builder_csrbank2_load0_r;
-reg           builder_csrbank2_load0_re = 1'd0;
-wire   [31:0] builder_csrbank2_load0_w;
-reg           builder_csrbank2_load0_we = 1'd0;
-wire   [31:0] builder_csrbank2_reload0_r;
-reg           builder_csrbank2_reload0_re = 1'd0;
-wire   [31:0] builder_csrbank2_reload0_w;
-reg           builder_csrbank2_reload0_we = 1'd0;
+wire   [31:0] builder_csrbank2_data_in0_r;
+reg           builder_csrbank2_data_in0_re = 1'd0;
+wire   [31:0] builder_csrbank2_data_in0_w;
+reg           builder_csrbank2_data_in0_we = 1'd0;
+wire   [31:0] builder_csrbank2_data_out_r;
+reg           builder_csrbank2_data_out_re = 1'd0;
+wire   [31:0] builder_csrbank2_data_out_w;
+reg           builder_csrbank2_data_out_we = 1'd0;
 wire          builder_csrbank2_sel;
-wire          builder_csrbank2_update_value0_r;
-reg           builder_csrbank2_update_value0_re = 1'd0;
-wire          builder_csrbank2_update_value0_w;
-reg           builder_csrbank2_update_value0_we = 1'd0;
-wire   [31:0] builder_csrbank2_value_r;
-reg           builder_csrbank2_value_re = 1'd0;
-wire   [31:0] builder_csrbank2_value_w;
-reg           builder_csrbank2_value_we = 1'd0;
-wire    [1:0] builder_csrbank3_ev_enable0_r;
+wire          builder_csrbank3_en0_r;
+reg           builder_csrbank3_en0_re = 1'd0;
+wire          builder_csrbank3_en0_w;
+reg           builder_csrbank3_en0_we = 1'd0;
+wire          builder_csrbank3_ev_enable0_r;
 reg           builder_csrbank3_ev_enable0_re = 1'd0;
-wire    [1:0] builder_csrbank3_ev_enable0_w;
+wire          builder_csrbank3_ev_enable0_w;
 reg           builder_csrbank3_ev_enable0_we = 1'd0;
-wire    [1:0] builder_csrbank3_ev_pending_r;
+wire          builder_csrbank3_ev_pending_r;
 reg           builder_csrbank3_ev_pending_re = 1'd0;
-wire    [1:0] builder_csrbank3_ev_pending_w;
+wire          builder_csrbank3_ev_pending_w;
 reg           builder_csrbank3_ev_pending_we = 1'd0;
-wire    [1:0] builder_csrbank3_ev_status_r;
+wire          builder_csrbank3_ev_status_r;
 reg           builder_csrbank3_ev_status_re = 1'd0;
-wire    [1:0] builder_csrbank3_ev_status_w;
+wire          builder_csrbank3_ev_status_w;
 reg           builder_csrbank3_ev_status_we = 1'd0;
-wire          builder_csrbank3_rxempty_r;
-reg           builder_csrbank3_rxempty_re = 1'd0;
-wire          builder_csrbank3_rxempty_w;
-reg           builder_csrbank3_rxempty_we = 1'd0;
-wire          builder_csrbank3_rxfull_r;
-reg           builder_csrbank3_rxfull_re = 1'd0;
-wire          builder_csrbank3_rxfull_w;
-reg           builder_csrbank3_rxfull_we = 1'd0;
+wire   [31:0] builder_csrbank3_load0_r;
+reg           builder_csrbank3_load0_re = 1'd0;
+wire   [31:0] builder_csrbank3_load0_w;
+reg           builder_csrbank3_load0_we = 1'd0;
+wire   [31:0] builder_csrbank3_reload0_r;
+reg           builder_csrbank3_reload0_re = 1'd0;
+wire   [31:0] builder_csrbank3_reload0_w;
+reg           builder_csrbank3_reload0_we = 1'd0;
 wire          builder_csrbank3_sel;
-wire          builder_csrbank3_txempty_r;
-reg           builder_csrbank3_txempty_re = 1'd0;
-wire          builder_csrbank3_txempty_w;
-reg           builder_csrbank3_txempty_we = 1'd0;
-wire          builder_csrbank3_txfull_r;
-reg           builder_csrbank3_txfull_re = 1'd0;
-wire          builder_csrbank3_txfull_w;
-reg           builder_csrbank3_txfull_we = 1'd0;
+wire          builder_csrbank3_update_value0_r;
+reg           builder_csrbank3_update_value0_re = 1'd0;
+wire          builder_csrbank3_update_value0_w;
+reg           builder_csrbank3_update_value0_we = 1'd0;
+wire   [31:0] builder_csrbank3_value_r;
+reg           builder_csrbank3_value_re = 1'd0;
+wire   [31:0] builder_csrbank3_value_w;
+reg           builder_csrbank3_value_we = 1'd0;
+wire    [1:0] builder_csrbank4_ev_enable0_r;
+reg           builder_csrbank4_ev_enable0_re = 1'd0;
+wire    [1:0] builder_csrbank4_ev_enable0_w;
+reg           builder_csrbank4_ev_enable0_we = 1'd0;
+wire    [1:0] builder_csrbank4_ev_pending_r;
+reg           builder_csrbank4_ev_pending_re = 1'd0;
+wire    [1:0] builder_csrbank4_ev_pending_w;
+reg           builder_csrbank4_ev_pending_we = 1'd0;
+wire    [1:0] builder_csrbank4_ev_status_r;
+reg           builder_csrbank4_ev_status_re = 1'd0;
+wire    [1:0] builder_csrbank4_ev_status_w;
+reg           builder_csrbank4_ev_status_we = 1'd0;
+wire          builder_csrbank4_rxempty_r;
+reg           builder_csrbank4_rxempty_re = 1'd0;
+wire          builder_csrbank4_rxempty_w;
+reg           builder_csrbank4_rxempty_we = 1'd0;
+wire          builder_csrbank4_rxfull_r;
+reg           builder_csrbank4_rxfull_re = 1'd0;
+wire          builder_csrbank4_rxfull_w;
+reg           builder_csrbank4_rxfull_we = 1'd0;
+wire          builder_csrbank4_sel;
+wire          builder_csrbank4_txempty_r;
+reg           builder_csrbank4_txempty_re = 1'd0;
+wire          builder_csrbank4_txempty_w;
+reg           builder_csrbank4_txempty_we = 1'd0;
+wire          builder_csrbank4_txfull_r;
+reg           builder_csrbank4_txfull_re = 1'd0;
+wire          builder_csrbank4_txfull_w;
+reg           builder_csrbank4_txfull_we = 1'd0;
 wire   [31:0] builder_dat_r;
 wire   [31:0] builder_dat_w;
 wire          builder_done;
@@ -248,6 +266,11 @@ reg    [31:0] builder_interface3_bank_bus_dat_r = 32'd0;
 wire   [31:0] builder_interface3_bank_bus_dat_w;
 wire          builder_interface3_bank_bus_re;
 wire          builder_interface3_bank_bus_we;
+wire   [13:0] builder_interface4_bank_bus_adr;
+reg    [31:0] builder_interface4_bank_bus_dat_r = 32'd0;
+wire   [31:0] builder_interface4_bank_bus_dat_w;
+wire          builder_interface4_bank_bus_re;
+wire          builder_interface4_bank_bus_we;
 reg           builder_next_state = 1'd0;
 wire          builder_re;
 reg           builder_regs0 = 1'd0;
@@ -288,6 +311,12 @@ reg           main_basesoc_basesoc_ram_bus_err = 1'd0;
 wire    [3:0] main_basesoc_basesoc_ram_bus_sel;
 wire          main_basesoc_basesoc_ram_bus_stb;
 wire          main_basesoc_basesoc_ram_bus_we;
+wire          main_basesoc_bus_error;
+reg    [31:0] main_basesoc_bus_errors = 32'd0;
+reg           main_basesoc_bus_errors_re = 1'd0;
+wire   [31:0] main_basesoc_bus_errors_status;
+wire          main_basesoc_bus_errors_we;
+wire          main_basesoc_cpu_rst;
 wire          main_basesoc_dbus_ack;
 wire   [29:0] main_basesoc_dbus_adr;
 wire    [1:0] main_basesoc_dbus_bte;
@@ -327,7 +356,9 @@ wire          main_basesoc_ram_bus_ram_bus_we;
 wire   [31:0] main_basesoc_ram_dat_r;
 wire   [31:0] main_basesoc_ram_dat_w;
 reg     [3:0] main_basesoc_ram_we = 4'd0;
-reg           main_basesoc_reset = 1'd0;
+wire          main_basesoc_reset;
+reg           main_basesoc_reset_re = 1'd0;
+reg     [1:0] main_basesoc_reset_storage = 2'd0;
 reg     [3:0] main_basesoc_rx_count = 4'd0;
 reg     [3:0] main_basesoc_rx_count_rs232phyrx_next_value0 = 4'd0;
 reg           main_basesoc_rx_count_rs232phyrx_next_value_ce0 = 1'd0;
@@ -344,8 +375,11 @@ reg     [7:0] main_basesoc_rx_source_payload_data = 8'd0;
 wire          main_basesoc_rx_source_ready;
 reg           main_basesoc_rx_source_valid = 1'd0;
 reg           main_basesoc_rx_tick = 1'd0;
+reg           main_basesoc_scratch_re = 1'd0;
+reg    [31:0] main_basesoc_scratch_storage = 32'd305419896;
 reg           main_basesoc_serial_tx_rs232phytx_next_value1 = 1'd0;
 reg           main_basesoc_serial_tx_rs232phytx_next_value_ce1 = 1'd0;
+reg           main_basesoc_soc_rst = 1'd0;
 reg           main_basesoc_timer_en_re = 1'd0;
 reg           main_basesoc_timer_en_storage = 1'd0;
 reg           main_basesoc_timer_enable_re = 1'd0;
@@ -525,6 +559,7 @@ wire          main_crg_locked;
 reg    [15:0] main_crg_por_count = 16'd65535;
 wire          main_crg_por_done;
 wire          main_crg_reset;
+reg           main_crg_rst = 1'd0;
 reg           main_data_in_re = 1'd0;
 reg    [31:0] main_data_in_storage = 32'd0;
 reg           main_data_out_re = 1'd0;
@@ -545,6 +580,14 @@ wire          sys_rst;
 // Combinatorial Logic
 //------------------------------------------------------------------------------
 
+assign main_basesoc_reset = (main_basesoc_soc_rst | main_basesoc_cpu_rst);
+always @(*) begin
+    main_crg_rst <= 1'd0;
+    if (main_basesoc_soc_rst) begin
+        main_crg_rst <= 1'd1;
+    end
+end
+assign main_basesoc_bus_error = builder_error;
 always @(*) begin
     main_basesoc_interrupt <= 32'd0;
     main_basesoc_interrupt[1] <= main_basesoc_timer_irq;
@@ -610,6 +653,7 @@ always @(*) begin
     end
 end
 assign builder_done = (builder_count == 1'd0);
+assign main_basesoc_bus_errors_status = main_basesoc_bus_errors;
 assign main_basesoc_basesoc_adr = main_basesoc_basesoc_ram_bus_adr[14:0];
 assign main_basesoc_basesoc_ram_bus_dat_r = main_basesoc_basesoc_dat_r;
 always @(*) begin
@@ -861,223 +905,262 @@ always @(*) begin
     endcase
 end
 assign builder_csrbank0_sel = (builder_interface0_bank_bus_adr[13:9] == 1'd1);
-assign builder_csrbank0_out0_r = builder_interface0_bank_bus_dat_w[5:0];
+assign builder_csrbank0_reset0_r = builder_interface0_bank_bus_dat_w[1:0];
 always @(*) begin
-    builder_csrbank0_out0_re <= 1'd0;
-    builder_csrbank0_out0_we <= 1'd0;
+    builder_csrbank0_reset0_re <= 1'd0;
+    builder_csrbank0_reset0_we <= 1'd0;
     if ((builder_csrbank0_sel & (builder_interface0_bank_bus_adr[8:0] == 1'd0))) begin
-        builder_csrbank0_out0_re <= builder_interface0_bank_bus_we;
-        builder_csrbank0_out0_we <= builder_interface0_bank_bus_re;
+        builder_csrbank0_reset0_re <= builder_interface0_bank_bus_we;
+        builder_csrbank0_reset0_we <= builder_interface0_bank_bus_re;
     end
 end
-assign builder_csrbank0_out0_w = main_storage;
-assign builder_csrbank1_sel = (builder_interface1_bank_bus_adr[13:9] == 1'd0);
-assign builder_csrbank1_data_in0_r = builder_interface1_bank_bus_dat_w;
+assign builder_csrbank0_scratch0_r = builder_interface0_bank_bus_dat_w;
 always @(*) begin
-    builder_csrbank1_data_in0_re <= 1'd0;
-    builder_csrbank1_data_in0_we <= 1'd0;
+    builder_csrbank0_scratch0_re <= 1'd0;
+    builder_csrbank0_scratch0_we <= 1'd0;
+    if ((builder_csrbank0_sel & (builder_interface0_bank_bus_adr[8:0] == 1'd1))) begin
+        builder_csrbank0_scratch0_re <= builder_interface0_bank_bus_we;
+        builder_csrbank0_scratch0_we <= builder_interface0_bank_bus_re;
+    end
+end
+assign builder_csrbank0_bus_errors_r = builder_interface0_bank_bus_dat_w;
+always @(*) begin
+    builder_csrbank0_bus_errors_re <= 1'd0;
+    builder_csrbank0_bus_errors_we <= 1'd0;
+    if ((builder_csrbank0_sel & (builder_interface0_bank_bus_adr[8:0] == 2'd2))) begin
+        builder_csrbank0_bus_errors_re <= builder_interface0_bank_bus_we;
+        builder_csrbank0_bus_errors_we <= builder_interface0_bank_bus_re;
+    end
+end
+always @(*) begin
+    main_basesoc_soc_rst <= 1'd0;
+    if (main_basesoc_reset_re) begin
+        main_basesoc_soc_rst <= main_basesoc_reset_storage[0];
+    end
+end
+assign main_basesoc_cpu_rst = main_basesoc_reset_storage[1];
+assign builder_csrbank0_reset0_w = main_basesoc_reset_storage;
+assign builder_csrbank0_scratch0_w = main_basesoc_scratch_storage;
+assign builder_csrbank0_bus_errors_w = main_basesoc_bus_errors_status;
+assign main_basesoc_bus_errors_we = builder_csrbank0_bus_errors_we;
+assign builder_csrbank1_sel = (builder_interface1_bank_bus_adr[13:9] == 2'd2);
+assign builder_csrbank1_out0_r = builder_interface1_bank_bus_dat_w[5:0];
+always @(*) begin
+    builder_csrbank1_out0_re <= 1'd0;
+    builder_csrbank1_out0_we <= 1'd0;
     if ((builder_csrbank1_sel & (builder_interface1_bank_bus_adr[8:0] == 1'd0))) begin
-        builder_csrbank1_data_in0_re <= builder_interface1_bank_bus_we;
-        builder_csrbank1_data_in0_we <= builder_interface1_bank_bus_re;
+        builder_csrbank1_out0_re <= builder_interface1_bank_bus_we;
+        builder_csrbank1_out0_we <= builder_interface1_bank_bus_re;
     end
 end
-assign builder_csrbank1_data_out_r = builder_interface1_bank_bus_dat_w;
+assign builder_csrbank1_out0_w = main_storage;
+assign builder_csrbank2_sel = (builder_interface2_bank_bus_adr[13:9] == 1'd0);
+assign builder_csrbank2_data_in0_r = builder_interface2_bank_bus_dat_w;
 always @(*) begin
-    builder_csrbank1_data_out_re <= 1'd0;
-    builder_csrbank1_data_out_we <= 1'd0;
-    if ((builder_csrbank1_sel & (builder_interface1_bank_bus_adr[8:0] == 1'd1))) begin
-        builder_csrbank1_data_out_re <= builder_interface1_bank_bus_we;
-        builder_csrbank1_data_out_we <= builder_interface1_bank_bus_re;
-    end
-end
-assign builder_csrbank1_data_in0_w = main_data_in_storage;
-assign builder_csrbank1_data_out_w = main_data_out_status;
-assign main_data_out_we = builder_csrbank1_data_out_we;
-assign builder_csrbank2_sel = (builder_interface2_bank_bus_adr[13:9] == 2'd2);
-assign builder_csrbank2_load0_r = builder_interface2_bank_bus_dat_w;
-always @(*) begin
-    builder_csrbank2_load0_re <= 1'd0;
-    builder_csrbank2_load0_we <= 1'd0;
+    builder_csrbank2_data_in0_re <= 1'd0;
+    builder_csrbank2_data_in0_we <= 1'd0;
     if ((builder_csrbank2_sel & (builder_interface2_bank_bus_adr[8:0] == 1'd0))) begin
-        builder_csrbank2_load0_re <= builder_interface2_bank_bus_we;
-        builder_csrbank2_load0_we <= builder_interface2_bank_bus_re;
+        builder_csrbank2_data_in0_re <= builder_interface2_bank_bus_we;
+        builder_csrbank2_data_in0_we <= builder_interface2_bank_bus_re;
     end
 end
-assign builder_csrbank2_reload0_r = builder_interface2_bank_bus_dat_w;
+assign builder_csrbank2_data_out_r = builder_interface2_bank_bus_dat_w;
 always @(*) begin
-    builder_csrbank2_reload0_re <= 1'd0;
-    builder_csrbank2_reload0_we <= 1'd0;
+    builder_csrbank2_data_out_re <= 1'd0;
+    builder_csrbank2_data_out_we <= 1'd0;
     if ((builder_csrbank2_sel & (builder_interface2_bank_bus_adr[8:0] == 1'd1))) begin
-        builder_csrbank2_reload0_re <= builder_interface2_bank_bus_we;
-        builder_csrbank2_reload0_we <= builder_interface2_bank_bus_re;
+        builder_csrbank2_data_out_re <= builder_interface2_bank_bus_we;
+        builder_csrbank2_data_out_we <= builder_interface2_bank_bus_re;
     end
 end
-assign builder_csrbank2_en0_r = builder_interface2_bank_bus_dat_w[0];
-always @(*) begin
-    builder_csrbank2_en0_re <= 1'd0;
-    builder_csrbank2_en0_we <= 1'd0;
-    if ((builder_csrbank2_sel & (builder_interface2_bank_bus_adr[8:0] == 2'd2))) begin
-        builder_csrbank2_en0_re <= builder_interface2_bank_bus_we;
-        builder_csrbank2_en0_we <= builder_interface2_bank_bus_re;
-    end
-end
-assign builder_csrbank2_update_value0_r = builder_interface2_bank_bus_dat_w[0];
-always @(*) begin
-    builder_csrbank2_update_value0_re <= 1'd0;
-    builder_csrbank2_update_value0_we <= 1'd0;
-    if ((builder_csrbank2_sel & (builder_interface2_bank_bus_adr[8:0] == 2'd3))) begin
-        builder_csrbank2_update_value0_re <= builder_interface2_bank_bus_we;
-        builder_csrbank2_update_value0_we <= builder_interface2_bank_bus_re;
-    end
-end
-assign builder_csrbank2_value_r = builder_interface2_bank_bus_dat_w;
-always @(*) begin
-    builder_csrbank2_value_re <= 1'd0;
-    builder_csrbank2_value_we <= 1'd0;
-    if ((builder_csrbank2_sel & (builder_interface2_bank_bus_adr[8:0] == 3'd4))) begin
-        builder_csrbank2_value_re <= builder_interface2_bank_bus_we;
-        builder_csrbank2_value_we <= builder_interface2_bank_bus_re;
-    end
-end
-assign builder_csrbank2_ev_status_r = builder_interface2_bank_bus_dat_w[0];
-always @(*) begin
-    builder_csrbank2_ev_status_re <= 1'd0;
-    builder_csrbank2_ev_status_we <= 1'd0;
-    if ((builder_csrbank2_sel & (builder_interface2_bank_bus_adr[8:0] == 3'd5))) begin
-        builder_csrbank2_ev_status_re <= builder_interface2_bank_bus_we;
-        builder_csrbank2_ev_status_we <= builder_interface2_bank_bus_re;
-    end
-end
-assign builder_csrbank2_ev_pending_r = builder_interface2_bank_bus_dat_w[0];
-always @(*) begin
-    builder_csrbank2_ev_pending_re <= 1'd0;
-    builder_csrbank2_ev_pending_we <= 1'd0;
-    if ((builder_csrbank2_sel & (builder_interface2_bank_bus_adr[8:0] == 3'd6))) begin
-        builder_csrbank2_ev_pending_re <= builder_interface2_bank_bus_we;
-        builder_csrbank2_ev_pending_we <= builder_interface2_bank_bus_re;
-    end
-end
-assign builder_csrbank2_ev_enable0_r = builder_interface2_bank_bus_dat_w[0];
-always @(*) begin
-    builder_csrbank2_ev_enable0_re <= 1'd0;
-    builder_csrbank2_ev_enable0_we <= 1'd0;
-    if ((builder_csrbank2_sel & (builder_interface2_bank_bus_adr[8:0] == 3'd7))) begin
-        builder_csrbank2_ev_enable0_re <= builder_interface2_bank_bus_we;
-        builder_csrbank2_ev_enable0_we <= builder_interface2_bank_bus_re;
-    end
-end
-assign builder_csrbank2_load0_w = main_basesoc_timer_load_storage;
-assign builder_csrbank2_reload0_w = main_basesoc_timer_reload_storage;
-assign builder_csrbank2_en0_w = main_basesoc_timer_en_storage;
-assign builder_csrbank2_update_value0_w = main_basesoc_timer_update_value_storage;
-assign builder_csrbank2_value_w = main_basesoc_timer_value_status;
-assign main_basesoc_timer_value_we = builder_csrbank2_value_we;
-assign main_basesoc_timer_status_status = main_basesoc_timer_zero0;
-assign builder_csrbank2_ev_status_w = main_basesoc_timer_status_status;
-assign main_basesoc_timer_status_we = builder_csrbank2_ev_status_we;
-assign main_basesoc_timer_pending_status = main_basesoc_timer_zero1;
-assign builder_csrbank2_ev_pending_w = main_basesoc_timer_pending_status;
-assign main_basesoc_timer_pending_we = builder_csrbank2_ev_pending_we;
-assign main_basesoc_timer_zero2 = main_basesoc_timer_enable_storage;
-assign builder_csrbank2_ev_enable0_w = main_basesoc_timer_enable_storage;
+assign builder_csrbank2_data_in0_w = main_data_in_storage;
+assign builder_csrbank2_data_out_w = main_data_out_status;
+assign main_data_out_we = builder_csrbank2_data_out_we;
 assign builder_csrbank3_sel = (builder_interface3_bank_bus_adr[13:9] == 2'd3);
-assign main_basesoc_uart_rxtx_r = builder_interface3_bank_bus_dat_w[7:0];
+assign builder_csrbank3_load0_r = builder_interface3_bank_bus_dat_w;
 always @(*) begin
-    main_basesoc_uart_rxtx_re <= 1'd0;
-    main_basesoc_uart_rxtx_we <= 1'd0;
+    builder_csrbank3_load0_re <= 1'd0;
+    builder_csrbank3_load0_we <= 1'd0;
     if ((builder_csrbank3_sel & (builder_interface3_bank_bus_adr[8:0] == 1'd0))) begin
-        main_basesoc_uart_rxtx_re <= builder_interface3_bank_bus_we;
-        main_basesoc_uart_rxtx_we <= builder_interface3_bank_bus_re;
+        builder_csrbank3_load0_re <= builder_interface3_bank_bus_we;
+        builder_csrbank3_load0_we <= builder_interface3_bank_bus_re;
     end
 end
-assign builder_csrbank3_txfull_r = builder_interface3_bank_bus_dat_w[0];
+assign builder_csrbank3_reload0_r = builder_interface3_bank_bus_dat_w;
 always @(*) begin
-    builder_csrbank3_txfull_re <= 1'd0;
-    builder_csrbank3_txfull_we <= 1'd0;
+    builder_csrbank3_reload0_re <= 1'd0;
+    builder_csrbank3_reload0_we <= 1'd0;
     if ((builder_csrbank3_sel & (builder_interface3_bank_bus_adr[8:0] == 1'd1))) begin
-        builder_csrbank3_txfull_re <= builder_interface3_bank_bus_we;
-        builder_csrbank3_txfull_we <= builder_interface3_bank_bus_re;
+        builder_csrbank3_reload0_re <= builder_interface3_bank_bus_we;
+        builder_csrbank3_reload0_we <= builder_interface3_bank_bus_re;
     end
 end
-assign builder_csrbank3_rxempty_r = builder_interface3_bank_bus_dat_w[0];
+assign builder_csrbank3_en0_r = builder_interface3_bank_bus_dat_w[0];
 always @(*) begin
-    builder_csrbank3_rxempty_re <= 1'd0;
-    builder_csrbank3_rxempty_we <= 1'd0;
+    builder_csrbank3_en0_re <= 1'd0;
+    builder_csrbank3_en0_we <= 1'd0;
     if ((builder_csrbank3_sel & (builder_interface3_bank_bus_adr[8:0] == 2'd2))) begin
-        builder_csrbank3_rxempty_re <= builder_interface3_bank_bus_we;
-        builder_csrbank3_rxempty_we <= builder_interface3_bank_bus_re;
+        builder_csrbank3_en0_re <= builder_interface3_bank_bus_we;
+        builder_csrbank3_en0_we <= builder_interface3_bank_bus_re;
     end
 end
-assign builder_csrbank3_ev_status_r = builder_interface3_bank_bus_dat_w[1:0];
+assign builder_csrbank3_update_value0_r = builder_interface3_bank_bus_dat_w[0];
+always @(*) begin
+    builder_csrbank3_update_value0_re <= 1'd0;
+    builder_csrbank3_update_value0_we <= 1'd0;
+    if ((builder_csrbank3_sel & (builder_interface3_bank_bus_adr[8:0] == 2'd3))) begin
+        builder_csrbank3_update_value0_re <= builder_interface3_bank_bus_we;
+        builder_csrbank3_update_value0_we <= builder_interface3_bank_bus_re;
+    end
+end
+assign builder_csrbank3_value_r = builder_interface3_bank_bus_dat_w;
+always @(*) begin
+    builder_csrbank3_value_re <= 1'd0;
+    builder_csrbank3_value_we <= 1'd0;
+    if ((builder_csrbank3_sel & (builder_interface3_bank_bus_adr[8:0] == 3'd4))) begin
+        builder_csrbank3_value_re <= builder_interface3_bank_bus_we;
+        builder_csrbank3_value_we <= builder_interface3_bank_bus_re;
+    end
+end
+assign builder_csrbank3_ev_status_r = builder_interface3_bank_bus_dat_w[0];
 always @(*) begin
     builder_csrbank3_ev_status_re <= 1'd0;
     builder_csrbank3_ev_status_we <= 1'd0;
-    if ((builder_csrbank3_sel & (builder_interface3_bank_bus_adr[8:0] == 2'd3))) begin
+    if ((builder_csrbank3_sel & (builder_interface3_bank_bus_adr[8:0] == 3'd5))) begin
         builder_csrbank3_ev_status_re <= builder_interface3_bank_bus_we;
         builder_csrbank3_ev_status_we <= builder_interface3_bank_bus_re;
     end
 end
-assign builder_csrbank3_ev_pending_r = builder_interface3_bank_bus_dat_w[1:0];
+assign builder_csrbank3_ev_pending_r = builder_interface3_bank_bus_dat_w[0];
 always @(*) begin
     builder_csrbank3_ev_pending_re <= 1'd0;
     builder_csrbank3_ev_pending_we <= 1'd0;
-    if ((builder_csrbank3_sel & (builder_interface3_bank_bus_adr[8:0] == 3'd4))) begin
+    if ((builder_csrbank3_sel & (builder_interface3_bank_bus_adr[8:0] == 3'd6))) begin
         builder_csrbank3_ev_pending_re <= builder_interface3_bank_bus_we;
         builder_csrbank3_ev_pending_we <= builder_interface3_bank_bus_re;
     end
 end
-assign builder_csrbank3_ev_enable0_r = builder_interface3_bank_bus_dat_w[1:0];
+assign builder_csrbank3_ev_enable0_r = builder_interface3_bank_bus_dat_w[0];
 always @(*) begin
     builder_csrbank3_ev_enable0_re <= 1'd0;
     builder_csrbank3_ev_enable0_we <= 1'd0;
-    if ((builder_csrbank3_sel & (builder_interface3_bank_bus_adr[8:0] == 3'd5))) begin
+    if ((builder_csrbank3_sel & (builder_interface3_bank_bus_adr[8:0] == 3'd7))) begin
         builder_csrbank3_ev_enable0_re <= builder_interface3_bank_bus_we;
         builder_csrbank3_ev_enable0_we <= builder_interface3_bank_bus_re;
     end
 end
-assign builder_csrbank3_txempty_r = builder_interface3_bank_bus_dat_w[0];
+assign builder_csrbank3_load0_w = main_basesoc_timer_load_storage;
+assign builder_csrbank3_reload0_w = main_basesoc_timer_reload_storage;
+assign builder_csrbank3_en0_w = main_basesoc_timer_en_storage;
+assign builder_csrbank3_update_value0_w = main_basesoc_timer_update_value_storage;
+assign builder_csrbank3_value_w = main_basesoc_timer_value_status;
+assign main_basesoc_timer_value_we = builder_csrbank3_value_we;
+assign main_basesoc_timer_status_status = main_basesoc_timer_zero0;
+assign builder_csrbank3_ev_status_w = main_basesoc_timer_status_status;
+assign main_basesoc_timer_status_we = builder_csrbank3_ev_status_we;
+assign main_basesoc_timer_pending_status = main_basesoc_timer_zero1;
+assign builder_csrbank3_ev_pending_w = main_basesoc_timer_pending_status;
+assign main_basesoc_timer_pending_we = builder_csrbank3_ev_pending_we;
+assign main_basesoc_timer_zero2 = main_basesoc_timer_enable_storage;
+assign builder_csrbank3_ev_enable0_w = main_basesoc_timer_enable_storage;
+assign builder_csrbank4_sel = (builder_interface4_bank_bus_adr[13:9] == 3'd4);
+assign main_basesoc_uart_rxtx_r = builder_interface4_bank_bus_dat_w[7:0];
 always @(*) begin
-    builder_csrbank3_txempty_re <= 1'd0;
-    builder_csrbank3_txempty_we <= 1'd0;
-    if ((builder_csrbank3_sel & (builder_interface3_bank_bus_adr[8:0] == 3'd6))) begin
-        builder_csrbank3_txempty_re <= builder_interface3_bank_bus_we;
-        builder_csrbank3_txempty_we <= builder_interface3_bank_bus_re;
+    main_basesoc_uart_rxtx_re <= 1'd0;
+    main_basesoc_uart_rxtx_we <= 1'd0;
+    if ((builder_csrbank4_sel & (builder_interface4_bank_bus_adr[8:0] == 1'd0))) begin
+        main_basesoc_uart_rxtx_re <= builder_interface4_bank_bus_we;
+        main_basesoc_uart_rxtx_we <= builder_interface4_bank_bus_re;
     end
 end
-assign builder_csrbank3_rxfull_r = builder_interface3_bank_bus_dat_w[0];
+assign builder_csrbank4_txfull_r = builder_interface4_bank_bus_dat_w[0];
 always @(*) begin
-    builder_csrbank3_rxfull_re <= 1'd0;
-    builder_csrbank3_rxfull_we <= 1'd0;
-    if ((builder_csrbank3_sel & (builder_interface3_bank_bus_adr[8:0] == 3'd7))) begin
-        builder_csrbank3_rxfull_re <= builder_interface3_bank_bus_we;
-        builder_csrbank3_rxfull_we <= builder_interface3_bank_bus_re;
+    builder_csrbank4_txfull_re <= 1'd0;
+    builder_csrbank4_txfull_we <= 1'd0;
+    if ((builder_csrbank4_sel & (builder_interface4_bank_bus_adr[8:0] == 1'd1))) begin
+        builder_csrbank4_txfull_re <= builder_interface4_bank_bus_we;
+        builder_csrbank4_txfull_we <= builder_interface4_bank_bus_re;
     end
 end
-assign builder_csrbank3_txfull_w = main_basesoc_uart_txfull_status;
-assign main_basesoc_uart_txfull_we = builder_csrbank3_txfull_we;
-assign builder_csrbank3_rxempty_w = main_basesoc_uart_rxempty_status;
-assign main_basesoc_uart_rxempty_we = builder_csrbank3_rxempty_we;
+assign builder_csrbank4_rxempty_r = builder_interface4_bank_bus_dat_w[0];
+always @(*) begin
+    builder_csrbank4_rxempty_re <= 1'd0;
+    builder_csrbank4_rxempty_we <= 1'd0;
+    if ((builder_csrbank4_sel & (builder_interface4_bank_bus_adr[8:0] == 2'd2))) begin
+        builder_csrbank4_rxempty_re <= builder_interface4_bank_bus_we;
+        builder_csrbank4_rxempty_we <= builder_interface4_bank_bus_re;
+    end
+end
+assign builder_csrbank4_ev_status_r = builder_interface4_bank_bus_dat_w[1:0];
+always @(*) begin
+    builder_csrbank4_ev_status_re <= 1'd0;
+    builder_csrbank4_ev_status_we <= 1'd0;
+    if ((builder_csrbank4_sel & (builder_interface4_bank_bus_adr[8:0] == 2'd3))) begin
+        builder_csrbank4_ev_status_re <= builder_interface4_bank_bus_we;
+        builder_csrbank4_ev_status_we <= builder_interface4_bank_bus_re;
+    end
+end
+assign builder_csrbank4_ev_pending_r = builder_interface4_bank_bus_dat_w[1:0];
+always @(*) begin
+    builder_csrbank4_ev_pending_re <= 1'd0;
+    builder_csrbank4_ev_pending_we <= 1'd0;
+    if ((builder_csrbank4_sel & (builder_interface4_bank_bus_adr[8:0] == 3'd4))) begin
+        builder_csrbank4_ev_pending_re <= builder_interface4_bank_bus_we;
+        builder_csrbank4_ev_pending_we <= builder_interface4_bank_bus_re;
+    end
+end
+assign builder_csrbank4_ev_enable0_r = builder_interface4_bank_bus_dat_w[1:0];
+always @(*) begin
+    builder_csrbank4_ev_enable0_re <= 1'd0;
+    builder_csrbank4_ev_enable0_we <= 1'd0;
+    if ((builder_csrbank4_sel & (builder_interface4_bank_bus_adr[8:0] == 3'd5))) begin
+        builder_csrbank4_ev_enable0_re <= builder_interface4_bank_bus_we;
+        builder_csrbank4_ev_enable0_we <= builder_interface4_bank_bus_re;
+    end
+end
+assign builder_csrbank4_txempty_r = builder_interface4_bank_bus_dat_w[0];
+always @(*) begin
+    builder_csrbank4_txempty_re <= 1'd0;
+    builder_csrbank4_txempty_we <= 1'd0;
+    if ((builder_csrbank4_sel & (builder_interface4_bank_bus_adr[8:0] == 3'd6))) begin
+        builder_csrbank4_txempty_re <= builder_interface4_bank_bus_we;
+        builder_csrbank4_txempty_we <= builder_interface4_bank_bus_re;
+    end
+end
+assign builder_csrbank4_rxfull_r = builder_interface4_bank_bus_dat_w[0];
+always @(*) begin
+    builder_csrbank4_rxfull_re <= 1'd0;
+    builder_csrbank4_rxfull_we <= 1'd0;
+    if ((builder_csrbank4_sel & (builder_interface4_bank_bus_adr[8:0] == 3'd7))) begin
+        builder_csrbank4_rxfull_re <= builder_interface4_bank_bus_we;
+        builder_csrbank4_rxfull_we <= builder_interface4_bank_bus_re;
+    end
+end
+assign builder_csrbank4_txfull_w = main_basesoc_uart_txfull_status;
+assign main_basesoc_uart_txfull_we = builder_csrbank4_txfull_we;
+assign builder_csrbank4_rxempty_w = main_basesoc_uart_rxempty_status;
+assign main_basesoc_uart_rxempty_we = builder_csrbank4_rxempty_we;
 always @(*) begin
     main_basesoc_uart_status_status <= 2'd0;
     main_basesoc_uart_status_status[0] <= main_basesoc_uart_tx0;
     main_basesoc_uart_status_status[1] <= main_basesoc_uart_rx0;
 end
-assign builder_csrbank3_ev_status_w = main_basesoc_uart_status_status;
-assign main_basesoc_uart_status_we = builder_csrbank3_ev_status_we;
+assign builder_csrbank4_ev_status_w = main_basesoc_uart_status_status;
+assign main_basesoc_uart_status_we = builder_csrbank4_ev_status_we;
 always @(*) begin
     main_basesoc_uart_pending_status <= 2'd0;
     main_basesoc_uart_pending_status[0] <= main_basesoc_uart_tx1;
     main_basesoc_uart_pending_status[1] <= main_basesoc_uart_rx1;
 end
-assign builder_csrbank3_ev_pending_w = main_basesoc_uart_pending_status;
-assign main_basesoc_uart_pending_we = builder_csrbank3_ev_pending_we;
+assign builder_csrbank4_ev_pending_w = main_basesoc_uart_pending_status;
+assign main_basesoc_uart_pending_we = builder_csrbank4_ev_pending_we;
 assign main_basesoc_uart_tx2 = main_basesoc_uart_enable_storage[0];
 assign main_basesoc_uart_rx2 = main_basesoc_uart_enable_storage[1];
-assign builder_csrbank3_ev_enable0_w = main_basesoc_uart_enable_storage;
-assign builder_csrbank3_txempty_w = main_basesoc_uart_txempty_status;
-assign main_basesoc_uart_txempty_we = builder_csrbank3_txempty_we;
-assign builder_csrbank3_rxfull_w = main_basesoc_uart_rxfull_status;
-assign main_basesoc_uart_rxfull_we = builder_csrbank3_rxfull_we;
+assign builder_csrbank4_ev_enable0_w = main_basesoc_uart_enable_storage;
+assign builder_csrbank4_txempty_w = main_basesoc_uart_txempty_status;
+assign main_basesoc_uart_txempty_we = builder_csrbank4_txempty_we;
+assign builder_csrbank4_rxfull_w = main_basesoc_uart_rxfull_status;
+assign main_basesoc_uart_rxfull_we = builder_csrbank4_rxfull_we;
 assign builder_adr = builder_interface1_adr;
 assign builder_re = builder_interface1_re;
 assign builder_we = builder_interface1_we;
@@ -1087,19 +1170,23 @@ assign builder_interface0_bank_bus_adr = builder_adr;
 assign builder_interface1_bank_bus_adr = builder_adr;
 assign builder_interface2_bank_bus_adr = builder_adr;
 assign builder_interface3_bank_bus_adr = builder_adr;
+assign builder_interface4_bank_bus_adr = builder_adr;
 assign builder_interface0_bank_bus_re = builder_re;
 assign builder_interface1_bank_bus_re = builder_re;
 assign builder_interface2_bank_bus_re = builder_re;
 assign builder_interface3_bank_bus_re = builder_re;
+assign builder_interface4_bank_bus_re = builder_re;
 assign builder_interface0_bank_bus_we = builder_we;
 assign builder_interface1_bank_bus_we = builder_we;
 assign builder_interface2_bank_bus_we = builder_we;
 assign builder_interface3_bank_bus_we = builder_we;
+assign builder_interface4_bank_bus_we = builder_we;
 assign builder_interface0_bank_bus_dat_w = builder_dat_w;
 assign builder_interface1_bank_bus_dat_w = builder_dat_w;
 assign builder_interface2_bank_bus_dat_w = builder_dat_w;
 assign builder_interface3_bank_bus_dat_w = builder_dat_w;
-assign builder_dat_r = (((builder_interface0_bank_bus_dat_r | builder_interface1_bank_bus_dat_r) | builder_interface2_bank_bus_dat_r) | builder_interface3_bank_bus_dat_r);
+assign builder_interface4_bank_bus_dat_w = builder_dat_w;
+assign builder_dat_r = ((((builder_interface0_bank_bus_dat_r | builder_interface1_bank_bus_dat_r) | builder_interface2_bank_bus_dat_r) | builder_interface3_bank_bus_dat_r) | builder_interface4_bank_bus_dat_r);
 always @(*) begin
     builder_array_muxed0 <= 30'd0;
     case (builder_grant)
@@ -1228,6 +1315,11 @@ always @(posedge sys_clk) begin
         end
     end else begin
         builder_count <= 20'd1000000;
+    end
+    if ((main_basesoc_bus_errors != 32'd4294967295)) begin
+        if (main_basesoc_bus_error) begin
+            main_basesoc_bus_errors <= (main_basesoc_bus_errors + 1'd1);
+        end
     end
     main_basesoc_basesoc_ram_bus_ack <= 1'd0;
     if (((main_basesoc_basesoc_ram_bus_cyc & main_basesoc_basesoc_ram_bus_stb) & ((~main_basesoc_basesoc_ram_bus_ack) | main_basesoc_basesoc_adr_burst))) begin
@@ -1358,128 +1450,157 @@ always @(posedge sys_clk) begin
     if (builder_csrbank0_sel) begin
         case (builder_interface0_bank_bus_adr[8:0])
             1'd0: begin
-                builder_interface0_bank_bus_dat_r <= builder_csrbank0_out0_w;
+                builder_interface0_bank_bus_dat_r <= builder_csrbank0_reset0_w;
+            end
+            1'd1: begin
+                builder_interface0_bank_bus_dat_r <= builder_csrbank0_scratch0_w;
+            end
+            2'd2: begin
+                builder_interface0_bank_bus_dat_r <= builder_csrbank0_bus_errors_w;
             end
         endcase
     end
-    if (builder_csrbank0_out0_re) begin
-        main_storage <= builder_csrbank0_out0_r;
+    if (builder_csrbank0_reset0_re) begin
+        main_basesoc_reset_storage <= builder_csrbank0_reset0_r;
     end
-    main_re <= builder_csrbank0_out0_re;
+    main_basesoc_reset_re <= builder_csrbank0_reset0_re;
+    if (builder_csrbank0_scratch0_re) begin
+        main_basesoc_scratch_storage <= builder_csrbank0_scratch0_r;
+    end
+    main_basesoc_scratch_re <= builder_csrbank0_scratch0_re;
+    main_basesoc_bus_errors_re <= builder_csrbank0_bus_errors_re;
     builder_interface1_bank_bus_dat_r <= 1'd0;
     if (builder_csrbank1_sel) begin
         case (builder_interface1_bank_bus_adr[8:0])
             1'd0: begin
-                builder_interface1_bank_bus_dat_r <= builder_csrbank1_data_in0_w;
-            end
-            1'd1: begin
-                builder_interface1_bank_bus_dat_r <= builder_csrbank1_data_out_w;
+                builder_interface1_bank_bus_dat_r <= builder_csrbank1_out0_w;
             end
         endcase
     end
-    if (builder_csrbank1_data_in0_re) begin
-        main_data_in_storage <= builder_csrbank1_data_in0_r;
+    if (builder_csrbank1_out0_re) begin
+        main_storage <= builder_csrbank1_out0_r;
     end
-    main_data_in_re <= builder_csrbank1_data_in0_re;
-    main_data_out_re <= builder_csrbank1_data_out_re;
+    main_re <= builder_csrbank1_out0_re;
     builder_interface2_bank_bus_dat_r <= 1'd0;
     if (builder_csrbank2_sel) begin
         case (builder_interface2_bank_bus_adr[8:0])
             1'd0: begin
-                builder_interface2_bank_bus_dat_r <= builder_csrbank2_load0_w;
+                builder_interface2_bank_bus_dat_r <= builder_csrbank2_data_in0_w;
             end
             1'd1: begin
-                builder_interface2_bank_bus_dat_r <= builder_csrbank2_reload0_w;
-            end
-            2'd2: begin
-                builder_interface2_bank_bus_dat_r <= builder_csrbank2_en0_w;
-            end
-            2'd3: begin
-                builder_interface2_bank_bus_dat_r <= builder_csrbank2_update_value0_w;
-            end
-            3'd4: begin
-                builder_interface2_bank_bus_dat_r <= builder_csrbank2_value_w;
-            end
-            3'd5: begin
-                builder_interface2_bank_bus_dat_r <= builder_csrbank2_ev_status_w;
-            end
-            3'd6: begin
-                builder_interface2_bank_bus_dat_r <= builder_csrbank2_ev_pending_w;
-            end
-            3'd7: begin
-                builder_interface2_bank_bus_dat_r <= builder_csrbank2_ev_enable0_w;
+                builder_interface2_bank_bus_dat_r <= builder_csrbank2_data_out_w;
             end
         endcase
     end
-    if (builder_csrbank2_load0_re) begin
-        main_basesoc_timer_load_storage <= builder_csrbank2_load0_r;
+    if (builder_csrbank2_data_in0_re) begin
+        main_data_in_storage <= builder_csrbank2_data_in0_r;
     end
-    main_basesoc_timer_load_re <= builder_csrbank2_load0_re;
-    if (builder_csrbank2_reload0_re) begin
-        main_basesoc_timer_reload_storage <= builder_csrbank2_reload0_r;
-    end
-    main_basesoc_timer_reload_re <= builder_csrbank2_reload0_re;
-    if (builder_csrbank2_en0_re) begin
-        main_basesoc_timer_en_storage <= builder_csrbank2_en0_r;
-    end
-    main_basesoc_timer_en_re <= builder_csrbank2_en0_re;
-    if (builder_csrbank2_update_value0_re) begin
-        main_basesoc_timer_update_value_storage <= builder_csrbank2_update_value0_r;
-    end
-    main_basesoc_timer_update_value_re <= builder_csrbank2_update_value0_re;
-    main_basesoc_timer_value_re <= builder_csrbank2_value_re;
-    main_basesoc_timer_status_re <= builder_csrbank2_ev_status_re;
-    if (builder_csrbank2_ev_pending_re) begin
-        main_basesoc_timer_pending_r <= builder_csrbank2_ev_pending_r;
-    end
-    main_basesoc_timer_pending_re <= builder_csrbank2_ev_pending_re;
-    if (builder_csrbank2_ev_enable0_re) begin
-        main_basesoc_timer_enable_storage <= builder_csrbank2_ev_enable0_r;
-    end
-    main_basesoc_timer_enable_re <= builder_csrbank2_ev_enable0_re;
+    main_data_in_re <= builder_csrbank2_data_in0_re;
+    main_data_out_re <= builder_csrbank2_data_out_re;
     builder_interface3_bank_bus_dat_r <= 1'd0;
     if (builder_csrbank3_sel) begin
         case (builder_interface3_bank_bus_adr[8:0])
             1'd0: begin
-                builder_interface3_bank_bus_dat_r <= main_basesoc_uart_rxtx_w;
+                builder_interface3_bank_bus_dat_r <= builder_csrbank3_load0_w;
             end
             1'd1: begin
-                builder_interface3_bank_bus_dat_r <= builder_csrbank3_txfull_w;
+                builder_interface3_bank_bus_dat_r <= builder_csrbank3_reload0_w;
             end
             2'd2: begin
-                builder_interface3_bank_bus_dat_r <= builder_csrbank3_rxempty_w;
+                builder_interface3_bank_bus_dat_r <= builder_csrbank3_en0_w;
             end
             2'd3: begin
-                builder_interface3_bank_bus_dat_r <= builder_csrbank3_ev_status_w;
+                builder_interface3_bank_bus_dat_r <= builder_csrbank3_update_value0_w;
             end
             3'd4: begin
-                builder_interface3_bank_bus_dat_r <= builder_csrbank3_ev_pending_w;
+                builder_interface3_bank_bus_dat_r <= builder_csrbank3_value_w;
             end
             3'd5: begin
-                builder_interface3_bank_bus_dat_r <= builder_csrbank3_ev_enable0_w;
+                builder_interface3_bank_bus_dat_r <= builder_csrbank3_ev_status_w;
             end
             3'd6: begin
-                builder_interface3_bank_bus_dat_r <= builder_csrbank3_txempty_w;
+                builder_interface3_bank_bus_dat_r <= builder_csrbank3_ev_pending_w;
             end
             3'd7: begin
-                builder_interface3_bank_bus_dat_r <= builder_csrbank3_rxfull_w;
+                builder_interface3_bank_bus_dat_r <= builder_csrbank3_ev_enable0_w;
             end
         endcase
     end
-    main_basesoc_uart_txfull_re <= builder_csrbank3_txfull_re;
-    main_basesoc_uart_rxempty_re <= builder_csrbank3_rxempty_re;
-    main_basesoc_uart_status_re <= builder_csrbank3_ev_status_re;
+    if (builder_csrbank3_load0_re) begin
+        main_basesoc_timer_load_storage <= builder_csrbank3_load0_r;
+    end
+    main_basesoc_timer_load_re <= builder_csrbank3_load0_re;
+    if (builder_csrbank3_reload0_re) begin
+        main_basesoc_timer_reload_storage <= builder_csrbank3_reload0_r;
+    end
+    main_basesoc_timer_reload_re <= builder_csrbank3_reload0_re;
+    if (builder_csrbank3_en0_re) begin
+        main_basesoc_timer_en_storage <= builder_csrbank3_en0_r;
+    end
+    main_basesoc_timer_en_re <= builder_csrbank3_en0_re;
+    if (builder_csrbank3_update_value0_re) begin
+        main_basesoc_timer_update_value_storage <= builder_csrbank3_update_value0_r;
+    end
+    main_basesoc_timer_update_value_re <= builder_csrbank3_update_value0_re;
+    main_basesoc_timer_value_re <= builder_csrbank3_value_re;
+    main_basesoc_timer_status_re <= builder_csrbank3_ev_status_re;
     if (builder_csrbank3_ev_pending_re) begin
-        main_basesoc_uart_pending_r <= builder_csrbank3_ev_pending_r;
+        main_basesoc_timer_pending_r <= builder_csrbank3_ev_pending_r;
     end
-    main_basesoc_uart_pending_re <= builder_csrbank3_ev_pending_re;
+    main_basesoc_timer_pending_re <= builder_csrbank3_ev_pending_re;
     if (builder_csrbank3_ev_enable0_re) begin
-        main_basesoc_uart_enable_storage <= builder_csrbank3_ev_enable0_r;
+        main_basesoc_timer_enable_storage <= builder_csrbank3_ev_enable0_r;
     end
-    main_basesoc_uart_enable_re <= builder_csrbank3_ev_enable0_re;
-    main_basesoc_uart_txempty_re <= builder_csrbank3_txempty_re;
-    main_basesoc_uart_rxfull_re <= builder_csrbank3_rxfull_re;
+    main_basesoc_timer_enable_re <= builder_csrbank3_ev_enable0_re;
+    builder_interface4_bank_bus_dat_r <= 1'd0;
+    if (builder_csrbank4_sel) begin
+        case (builder_interface4_bank_bus_adr[8:0])
+            1'd0: begin
+                builder_interface4_bank_bus_dat_r <= main_basesoc_uart_rxtx_w;
+            end
+            1'd1: begin
+                builder_interface4_bank_bus_dat_r <= builder_csrbank4_txfull_w;
+            end
+            2'd2: begin
+                builder_interface4_bank_bus_dat_r <= builder_csrbank4_rxempty_w;
+            end
+            2'd3: begin
+                builder_interface4_bank_bus_dat_r <= builder_csrbank4_ev_status_w;
+            end
+            3'd4: begin
+                builder_interface4_bank_bus_dat_r <= builder_csrbank4_ev_pending_w;
+            end
+            3'd5: begin
+                builder_interface4_bank_bus_dat_r <= builder_csrbank4_ev_enable0_w;
+            end
+            3'd6: begin
+                builder_interface4_bank_bus_dat_r <= builder_csrbank4_txempty_w;
+            end
+            3'd7: begin
+                builder_interface4_bank_bus_dat_r <= builder_csrbank4_rxfull_w;
+            end
+        endcase
+    end
+    main_basesoc_uart_txfull_re <= builder_csrbank4_txfull_re;
+    main_basesoc_uart_rxempty_re <= builder_csrbank4_rxempty_re;
+    main_basesoc_uart_status_re <= builder_csrbank4_ev_status_re;
+    if (builder_csrbank4_ev_pending_re) begin
+        main_basesoc_uart_pending_r <= builder_csrbank4_ev_pending_r;
+    end
+    main_basesoc_uart_pending_re <= builder_csrbank4_ev_pending_re;
+    if (builder_csrbank4_ev_enable0_re) begin
+        main_basesoc_uart_enable_storage <= builder_csrbank4_ev_enable0_r;
+    end
+    main_basesoc_uart_enable_re <= builder_csrbank4_ev_enable0_re;
+    main_basesoc_uart_txempty_re <= builder_csrbank4_txempty_re;
+    main_basesoc_uart_rxfull_re <= builder_csrbank4_rxfull_re;
     if (sys_rst) begin
+        main_basesoc_reset_storage <= 2'd0;
+        main_basesoc_reset_re <= 1'd0;
+        main_basesoc_scratch_storage <= 32'd305419896;
+        main_basesoc_scratch_re <= 1'd0;
+        main_basesoc_bus_errors_re <= 1'd0;
+        main_basesoc_bus_errors <= 32'd0;
         main_basesoc_basesoc_ram_bus_ack <= 1'd0;
         main_basesoc_ram_bus_ram_bus_ack <= 1'd0;
         serial_tx <= 1'd1;
@@ -1550,10 +1671,10 @@ end
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-// Memory rom: 5964-words x 32-bit
+// Memory rom: 6017-words x 32-bit
 //------------------------------------------------------------------------------
 // Port 0 | Read: Sync  | Write: ---- | 
-reg [31:0] rom[0:5963];
+reg [31:0] rom[0:6016];
 initial begin
 	$readmemh("sipeed_tang_mega_138k_pro_rom.init", rom);
 end
@@ -1855,5 +1976,5 @@ DFFP DFFP_1(
 endmodule
 
 // -----------------------------------------------------------------------------
-//  Auto-Generated by LiteX on 2025-02-13 15:19:05.
+//  Auto-Generated by LiteX on 2025-02-13 15:37:16.
 //------------------------------------------------------------------------------
