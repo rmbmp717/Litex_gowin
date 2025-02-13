@@ -163,12 +163,15 @@ class BaseSoC(SoCCore):
 
         # MyModule の Verilog ファイルを追加
         platform.add_source("/home/haruhiko/Program/Litex/build/sipeed_tang_mega_138k_pro/MyModule/MyModule.v")
- 
+
+        # kwargs から integrated_rom_size を削除
+        kwargs.pop("integrated_rom_size", None)  # 既に kwargs に含まれている場合は削除
 
         # SoCCore.__init__() に必要なパラメータを明示的に渡す
         SoCCore.__init__(self, platform, sys_clk_freq,
                          #with_ctrl=False,              # ctrl を無効化
                          with_ctrl=True,              # ctrl
+                         integrated_rom_size=0x20000,  # BIOS を有効にする
                          integrated_sram_size=0x8000,    # 明示的に設定
                          csr_paging=0x800,               # 明示的に設定
                          **kwargs)
