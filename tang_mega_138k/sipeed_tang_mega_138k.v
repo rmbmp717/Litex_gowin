@@ -18,7 +18,7 @@
 // Module
 //------------------------------------------------------------------------------
 
-module sipeed_tang_mega_138k_pro (
+module sipeed_tang_mega_138k (
     input  wire          clk50,
     output wire          led_n0,
     output wire          led_n1,
